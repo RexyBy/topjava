@@ -3,11 +3,11 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExcess;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -28,12 +28,35 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO return filtered list with excess. Implement by cycles
-        return null;
+        Map<LocalDate, Integer> caloriesForEachDate = calculateCaloriesForEachDay(meals);
+
+        List<UserMealWithExcess> userMealsWithExcess = new ArrayList<>();
+        for (UserMeal nextUserMeal : meals) {
+            LocalDateTime mealDateTime = nextUserMeal.getDateTime();
+            if (TimeUtil.isBetweenHalfOpen(mealDateTime.toLocalTime(), startTime, endTime)) {
+                String mealDescription = nextUserMeal.getDescription();
+                int mealCalories = nextUserMeal.getCalories();
+                boolean excess = caloriesForEachDate.getOrDefault(mealDateTime.toLocalDate(), 0) > caloriesPerDay;
+                userMealsWithExcess.add(new UserMealWithExcess(mealDateTime,
+                        mealDescription,
+                        mealCalories,
+                        excess));
+            }
+        }
+        return userMealsWithExcess;
     }
 
     public static List<UserMealWithExcess> filteredByStreams(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         // TODO Implement by streams
-        return null;
+       return null;
+    }
+
+    private static Map<LocalDate, Integer> calculateCaloriesForEachDay(List<UserMeal> meals) {
+        Map<LocalDate, Integer> caloriesForEachDate = new HashMap<>();
+        meals.forEach(nextMeal -> caloriesForEachDate.merge(
+                nextMeal.getDateTime().toLocalDate(),
+                nextMeal.getCalories(),
+                Integer::sum));
+        return caloriesForEachDate;
     }
 }
