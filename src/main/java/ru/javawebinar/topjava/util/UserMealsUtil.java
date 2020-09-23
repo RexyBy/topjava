@@ -23,12 +23,18 @@ public class UserMealsUtil {
                 new UserMeal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
         );
 
-//       List<UserMealWithExcess> mealsTo = filteredByCycles(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
-//        mealsTo.forEach(System.out::println);
+        //cycles test
+        List<UserMealWithExcess> mealsTo = filteredByCycles(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
+        mealsTo.forEach(System.out::println);
 
-//        System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
+        //streams test
+        System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
 
+        //one cycle test
         System.out.println(filterByOneCycle(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
+
+        //one stream test
+        System.out.println(filterByOneStream(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
@@ -84,6 +90,11 @@ public class UserMealsUtil {
             }
         }
         return userMealsWithExcess;
+    }
+
+    public static List<UserMealWithExcess> filterByOneStream(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
+        return meals.stream()
+                .collect(new UserMealWithExcessCollector(caloriesPerDay, startTime, endTime));
     }
 
     private static Map<LocalDate, Integer> calculateCaloriesForEachDay(List<UserMeal> meals) {
