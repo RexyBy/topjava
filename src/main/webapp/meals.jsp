@@ -9,7 +9,8 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Meals</h2>
-<table border="1" cellpadding="5">
+<style> table.meals-table, .meals-table td { border: 2px solid black; border-collapse: collapse; padding: 5px } </style>
+<table class="meals-table">
     <tr>
         <td style="text-align: center;"><b>Date:</b></td>
         <td style="text-align: center;"><b>Description:</b></td>
