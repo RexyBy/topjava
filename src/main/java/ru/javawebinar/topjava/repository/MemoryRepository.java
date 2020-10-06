@@ -6,10 +6,11 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MemoryRepository {
-    private static volatile long id = 1;
-    private List<Meal> meals = new CopyOnWriteArrayList<>();
+public class MemoryRepository implements Repository {
+    private static final AtomicInteger id = new AtomicInteger(1);
+    private final List<Meal> meals = new CopyOnWriteArrayList<>();
 
 
     private MemoryRepository() {
@@ -17,31 +18,60 @@ public class MemoryRepository {
     }
 
     private void mealsInit() {
-        addMeal(new Meal(id, LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
-        addMeal(new Meal(id, LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
-        addMeal(new Meal(id, LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
-        addMeal(new Meal(id, LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
-        addMeal(new Meal(id, LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
-        addMeal(new Meal(id, LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
-        addMeal(new Meal(id, LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
+        meals.add(new Meal(id.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
+        meals.add(new Meal(id.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
+        meals.add(new Meal(id.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
+        meals.add(new Meal(id.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
+        meals.add(new Meal(id.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
+        meals.add(new Meal(id.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
+        meals.add(new Meal(id.incrementAndGet(), LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
-    private void addMeal(Meal meal) {
-        meals.add(meal);
-        synchronized (MemoryRepository.class){
-            id++;
-        }
-    }
 
     private static class repositoryHolder {
         private static final MemoryRepository REPOSITORY = new MemoryRepository();
     }
 
-    public static MemoryRepository getRepository(){
+    public static MemoryRepository getRepository() {
         return repositoryHolder.REPOSITORY;
     }
 
-    public List<Meal> getMeals() {
+    @Override
+    public List<Meal> getAllMeals() {
         return meals;
+    }
+
+    @Override
+    public void addMeal(LocalDateTime dateTime, String description, int calories) {
+        meals.add(new Meal(id.incrementAndGet(), dateTime, description, calories));
+    }
+
+    @Override
+    public boolean deleteMeal(int id) {
+        for (int i = 0; i < meals.size(); i++) {
+            if (meals.get(i).getId() == id) {
+                meals.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void updateMeal(int id, LocalDateTime dateTime, String description, Integer calories) {
+        Meal oldMeal = null;
+        for (Meal meal : meals) {
+            if (meal.getId() == id) {
+                oldMeal = meal;
+                break;
+            }
+        }
+        if (oldMeal != null) {
+            deleteMeal(id);
+            meals.add(new Meal(id,
+                    dateTime == null ? oldMeal.getDateTime() : dateTime,
+                    description.equals("") ? oldMeal.getDescription() : description,
+                    calories == null ? oldMeal.getCalories() : calories));
+        }
     }
 }
