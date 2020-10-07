@@ -28,6 +28,7 @@ public class MemoryMealRepository implements MealRepository {
         add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
+
     @Override
     public List<Meal> getAll() {
         return new ArrayList<>(meals.values());
@@ -35,8 +36,9 @@ public class MemoryMealRepository implements MealRepository {
 
     @Override
     public Meal add(Meal newMeal) {
-        newMeal.setId(nextId.get());
-        meals.put(nextId.getAndIncrement(), newMeal);
+        int newMealId = nextId.getAndIncrement();
+        newMeal.setId(newMealId);
+        meals.put(newMealId, newMeal);
         return newMeal;
     }
 
@@ -47,9 +49,7 @@ public class MemoryMealRepository implements MealRepository {
 
     @Override
     public Meal update(Meal newMeal) {
-        if (!meals.containsKey(newMeal.getId()))
-            return null;
-        meals.put(newMeal.getId(), newMeal);
+        meals.computeIfPresent(newMeal.getId(), (key, value) -> value = newMeal);
         return newMeal;
     }
 
