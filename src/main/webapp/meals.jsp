@@ -15,7 +15,7 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Meals</h2>
-<input type="button" value="Add meal" onClick='location.href="/topjava/meals?action=add"'/>
+<input type="button" value="Add meal" onClick='location.href="meals?action=add"'/>
 <hr>
 <table class="meals-table">
     <tr>
@@ -30,12 +30,12 @@
         <tr style="color: ${meal.isExcess() ? "red" : "green"}">
             <td>
                 <javatime:format value="${meal.dateTime}" pattern="yyyy-MM-dd HH:mm" var="date"/>
-                <c:out value="${date}"/>
+                ${date}
             </td>
-            <td><c:out value="${meal.description}"/></td>
-            <td><c:out value="${meal.calories}"/></td>
-            <td><input type="button" value="Update" onClick='location.href="/topjava/meals?action=update&id=${meal.ID}"'/></td>
-            <td><input type="button" value="Delete" onClick='location.href="/topjava/meals?action=delete&id=${meal.ID}"'/></td>
+            <td>${meal.description}</td>
+            <td>${meal.calories}</td>
+            <td><input type="button" value="Update" onClick='location.href="meals?action=update&id=${meal.id}&description=${meal.description}&dateTime=${meal.dateTime}&calories=${meal.calories}"'/></td>
+            <td><input type="button" value="Delete" onClick='location.href="meals?action=delete&id=${meal.id}"'/></td>
         </tr>
     </c:forEach>
 </table>
