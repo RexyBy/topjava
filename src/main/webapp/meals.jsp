@@ -49,6 +49,26 @@
             </tr>
         </c:forEach>
     </table>
+    <hr/>
+        <form method="get">
+            <dl>
+                <dt>Start date:</dt>
+                <dd><input type="date" name="startDate"></dd>
+            </dl>
+            <dl>
+                <dt>End date:</dt>
+                <dd><input type="date" name="endDate"></dd>
+            </dl>
+            <dl>
+                <dt>Start time:</dt>
+                <dd><input type="time" name="startTime"></dd>
+            </dl>
+            <dl>
+                <dt>End time:</dt>
+                <dd><input type="time" name="endTime"></dd>
+            </dl>
+            <button type="submit" formaction="${pageContext.request.contextPath}/meals/filter">Filter</button>
+        </form>
 </section>
 </body>
 </html>
