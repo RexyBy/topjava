@@ -90,7 +90,7 @@ public class MealServlet extends HttpServlet {
             default:
                 log.info("getAll");
                 request.setAttribute("meals",
-                        MealsUtil.getTos(controller.getAll(), SecurityUtil.authUserCaloriesPerDay()));
+                        controller.getAll());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
@@ -110,11 +110,7 @@ public class MealServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/meals");
         }
         log.info("get filtered meals");
-        request.setAttribute("meals", MealsUtil.filterByPredicate(
-                controller.getAll(),
-                SecurityUtil.authUserCaloriesPerDay(),
-                meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), filter.getStartDate(), filter.getEndDate())
-                        && DateTimeUtil.isBetweenHalfOpen(meal.getTime(), filter.getStartTime(), filter.getEndTime())));
+        request.setAttribute("meals", controller.getFiltered(filter));
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
 
     }

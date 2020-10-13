@@ -47,4 +47,14 @@ public class MealFilter {
         }
         return endTime;
     }
+
+    @Override
+    public String toString() {
+        return "MealFilter{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", startTime=" + startTime +
+                ", endTime=" + endTime +
+                '}';
+    }
 }

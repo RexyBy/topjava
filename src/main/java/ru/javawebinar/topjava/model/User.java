@@ -91,6 +91,8 @@ public class User extends AbstractNamedEntity implements Comparable<User> {
 
     @Override
     public int compareTo(User other) {
+        if (name.compareTo(other.name) == 0)
+            return email.compareTo(other.email);
         return name.compareTo(other.name);
     }
 }
