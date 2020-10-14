@@ -11,7 +11,6 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealService {
-
     private MealRepository repository;
 
     public MealService(MealRepository repository, UserService userService) {
@@ -40,6 +39,6 @@ public class MealService {
     }
 
     public List<Meal> getFilteredByDate(MealFilter filter, int userId){
-        return repository.getFilteredByDate(filter, userId);
+        return repository.getFilteredByDate(filter.getStartDate(), filter.getEndDate(), userId);
     }
 }

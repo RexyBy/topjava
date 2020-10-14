@@ -1,8 +1,8 @@
 package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.web.MealFilter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface MealRepository {
@@ -19,5 +19,5 @@ public interface MealRepository {
     List<Meal> getAll(int userId);
 
     //empty list if not found any meals for user with required filter
-    List<Meal> getFilteredByDate(MealFilter filter, int userId);
+    List<Meal> getFilteredByDate(LocalDate startDate, LocalDate endDate, int userId);
 }

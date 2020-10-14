@@ -5,9 +5,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.MealFilter;
 
-
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,19 +18,16 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public InMemoryMealRepository() {
-      //  MealsUtil.meals.forEach(meal -> save(meal, (int) (Math.random() * 2 + 1)));
+        MealsUtil.meals.forEach(meal -> save(meal, (int) (Math.random() * 2 + 1)));
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
+        repository.putIfAbsent(userId, new HashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             Map<Integer, Meal> newMealMap = new HashMap<>();
-            newMealMap.put(meal.getId(), meal);
-            repository.merge(userId, newMealMap, (oldVal, newVal) -> {
-                oldVal.putAll(newVal);
-                return oldVal;
-            });
+            repository.get(userId).put(meal.getId(), meal);
             return meal;
         }
         // handle case: update, but not present in storage
@@ -51,27 +47,22 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        List<Meal> allUserMeals = new ArrayList<>(getValidUserMeals(userId).values());
-        compareByDateInReverseOrder(allUserMeals);
-        return allUserMeals;
+        return getValidUserMeals(userId).values().stream()
+                .sorted(Comparator.comparing(Meal::getDate).reversed())
+                .collect(Collectors.toList());
+
     }
 
     @Override
-    public List<Meal> getFilteredByDate(MealFilter filter, int userId) {
-        List<Meal> userMealsFilteredByDate = getValidUserMeals(userId).values().stream()
-                .filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), filter.getStartDate(), filter.getEndDate()))
+    public List<Meal> getFilteredByDate(LocalDate startDate, LocalDate endDate, int userId) {
+        return getValidUserMeals(userId).values().stream()
+                .filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate))
+                .sorted(Comparator.comparing(Meal::getDate).reversed())
                 .collect(Collectors.toList());
-        compareByDateInReverseOrder(userMealsFilteredByDate);
-        return userMealsFilteredByDate;
     }
 
     private Map<Integer, Meal> getValidUserMeals(int userId) {
-        return repository.getOrDefault(userId, Collections.EMPTY_MAP) == null ? new HashMap<>() : repository.getOrDefault(userId, Collections.EMPTY_MAP);
-    }
-
-    private void compareByDateInReverseOrder(List<Meal> meals){
-        Comparator<Meal> dateComparator = (o1, o2) -> o2.getDateTime().compareTo(o1.getDateTime());
-        meals.sort(dateComparator);
+        return repository.getOrDefault(userId, Collections.emptyMap());
     }
 }
 
