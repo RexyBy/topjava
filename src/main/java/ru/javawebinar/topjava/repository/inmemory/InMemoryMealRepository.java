@@ -19,7 +19,7 @@ public class InMemoryMealRepository implements MealRepository {
     private final AtomicInteger counter = new AtomicInteger(0);
 
     public InMemoryMealRepository() {
-        MealsUtil.meals.forEach(meal -> save(meal, (int) (Math.random() * 2 + 1)));
+      //  MealsUtil.meals.forEach(meal -> save(meal, (int) (Math.random() * 2 + 1)));
     }
 
     @Override
@@ -66,7 +66,7 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     private Map<Integer, Meal> getValidUserMeals(int userId) {
-        return repository.getOrDefault(userId, Collections.EMPTY_MAP) == null ? new HashMap<>() : repository.get(userId);
+        return repository.getOrDefault(userId, Collections.EMPTY_MAP) == null ? new HashMap<>() : repository.getOrDefault(userId, Collections.EMPTY_MAP);
     }
 
     private void compareByDateInReverseOrder(List<Meal> meals){
