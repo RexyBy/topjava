@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.service;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.web.MealFilter;
 
 import java.util.List;
 
@@ -13,12 +14,13 @@ public class MealService {
 
     private MealRepository repository;
 
-    public MealService(MealRepository repository) {
+    public MealService(MealRepository repository, UserService userService) {
         this.repository = repository;
     }
 
-    public Meal create(Meal meal) {
-        return repository.save(meal);
+    public Meal create(Meal meal, int userId) {
+
+        return repository.save(meal, userId);
     }
 
     public void delete(int id, int userId) {
@@ -33,7 +35,11 @@ public class MealService {
         return repository.getAll(userId);
     }
 
-    public void update(Meal meal) {
-        checkNotFoundWithId(repository.save(meal), meal.getId());
+    public void update(Meal meal, int userId) {
+        checkNotFoundWithId(repository.save(meal, userId), meal.getId());
+    }
+
+    public List<Meal> getFilteredByDate(MealFilter filter, int userId){
+        return repository.getFilteredByDate(filter, userId);
     }
 }

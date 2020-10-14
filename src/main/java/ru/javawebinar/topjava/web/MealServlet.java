@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealFilter;
-import ru.javawebinar.topjava.util.DateTimeUtil;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -26,7 +23,6 @@ public class MealServlet extends HttpServlet {
     private ConfigurableApplicationContext appCtx;
     private MealRestController controller;
 
-
     @Override
     public void init() throws ServletException {
         appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
@@ -41,11 +37,14 @@ public class MealServlet extends HttpServlet {
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")),
-                SecurityUtil.authUserId());
+                Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        controller.create(meal);
+        if (meal.isNew()) {
+            controller.create(meal);
+        } else {
+            controller.update(meal, meal.getId());
+        }
         response.sendRedirect("meals");
     }
 
@@ -56,7 +55,6 @@ public class MealServlet extends HttpServlet {
         } else {
             handleMeals(request, response);
         }
-
     }
 
     @Override
@@ -81,7 +79,7 @@ public class MealServlet extends HttpServlet {
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.authUserId()) :
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         controller.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
@@ -94,7 +92,6 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }
-
     }
 
     private void handleMealsWithFilter(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -105,13 +102,14 @@ public class MealServlet extends HttpServlet {
           request.getParameter("endTime").isEmpty() ? null : LocalTime.parse(request.getParameter("endTime"))
         );
 
-        if (filter.isEmpty() == false){
+        if (filter.isEmpty()){
             log.info("Filter is empty, redirecting to /meals");
             response.sendRedirect(request.getContextPath() + "/meals");
         }
-        log.info("get filtered meals");
-        request.setAttribute("meals", controller.getFiltered(filter));
-        request.getRequestDispatcher("/meals.jsp").forward(request, response);
-
+        else {
+            log.info("get filtered meals");
+            request.setAttribute("meals", controller.getFilteredByDateAndTime(filter));
+            request.getRequestDispatcher("/meals.jsp").forward(request, response);
+        }
     }
 }

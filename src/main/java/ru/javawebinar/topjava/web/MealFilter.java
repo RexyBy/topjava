@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.model;
+package ru.javawebinar.topjava.web;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,7 +17,7 @@ public class MealFilter {
     }
 
     public boolean isEmpty(){
-        return startDate != null || endDate != null || startTime != null || endTime != null;
+        return startDate == null && endDate == null && startTime == null && endTime == null;
     }
 
     public LocalDate getStartDate() {

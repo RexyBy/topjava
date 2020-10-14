@@ -2,22 +2,30 @@ package ru.javawebinar.topjava;
 
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.web.SecurityUtil;
+import ru.javawebinar.topjava.model.Role;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 
-import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.Arrays;
+import java.util.List;
+
 
 public class SpringMain {
+    public static final List<User> users = Arrays.asList(
+            new User(null, "John", "john@mail.ru", "qwerty", Role.USER),
+            new User(null, "Mike", "mike@gmail.com", "asdfg", Role.USER),
+            new User(null, "Anna", "an.na@yahoo.com", "12345566", Role.USER),
+            new User(null, "Jane", "jane.smith@bk.ru", "qwerty", Role.USER),
+            new User(null, "Vasyan", "vasyan@yandex.ru", "YECgAa", Role.ADMIN)
+    );
+
     public static void main(String[] args) {
         // java 7 automatic resource management (ARM)
         try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
             System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
-            mealRestController.create(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 23, 0), "Поздний ужин", 35, SecurityUtil.authUserId()));
+            mealRestController.delete(5);
         }
 
     }

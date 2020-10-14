@@ -3,14 +3,11 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import ru.javawebinar.topjava.SpringMain;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
-import ru.javawebinar.topjava.util.UserUtil;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -21,7 +18,7 @@ public class InMemoryUserRepository implements UserRepository {
     private final AtomicInteger nextId = new AtomicInteger(0);
 
     public InMemoryUserRepository() {
-        UserUtil.users.forEach(this::save);
+        SpringMain.users.forEach(this::save);
     }
 
     @Override
@@ -51,7 +48,12 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         List<User> allUsers = new ArrayList<>(repository.values());
-        Collections.sort(allUsers);
+        Comparator<User> nameComparator = (o1, o2) -> {
+            if (o1.getName().compareTo(o2.getName()) == 0)
+                return o1.getEmail().compareTo(o2.getEmail());
+            return o1.getName().compareTo(o2.getName());
+        };
+        allUsers.sort(nameComparator);
         return allUsers;
     }
 
@@ -63,5 +65,4 @@ public class InMemoryUserRepository implements UserRepository {
                 .filter(user -> user.getEmail().equals(email))
                 .findFirst().orElse(null);
     }
-
 }

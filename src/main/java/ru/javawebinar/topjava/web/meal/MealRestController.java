@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealFilter;
+import ru.javawebinar.topjava.util.ValidationUtil;
+import ru.javawebinar.topjava.web.MealFilter;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.DateTimeUtil;
@@ -42,7 +43,8 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         log.info("create {}", meal);
-        return service.create(meal);
+        ValidationUtil.checkNew(meal);
+        return service.create(meal, SecurityUtil.authUserId());
     }
 
     public void delete(int id) {
@@ -53,15 +55,15 @@ public class MealRestController {
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
-        service.update(meal);
+        service.update(meal, SecurityUtil.authUserId());
     }
 
-    public List<MealTo> getFiltered(MealFilter filter) {
+    public List<MealTo> getFilteredByDateAndTime(MealFilter filter) {
         log.info("get filtered with following filter" + filter);
+
         return MealsUtil.filterByPredicate(
-                service.getAll(SecurityUtil.authUserId()),
+                service.getFilteredByDate(filter, SecurityUtil.authUserId()),
                 SecurityUtil.authUserCaloriesPerDay(),
-                meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), filter.getStartDate(), filter.getEndDate())
-                        && DateTimeUtil.isBetweenHalfOpen(meal.getTime(), filter.getStartTime(), filter.getEndTime()));
+                meal -> DateTimeUtil.isBetweenHalfOpen(meal.getTime(), filter.getStartTime(), filter.getEndTime()));
     }
 }
