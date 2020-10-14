@@ -53,19 +53,19 @@
         <form method="get">
             <dl>
                 <dt>Start date:</dt>
-                <dd><input type="date" name="startDate"></dd>
+                <dd><input type="date" name="startDate" value="${param.get("startDate")}"></dd>
             </dl>
             <dl>
                 <dt>End date:</dt>
-                <dd><input type="date" name="endDate"></dd>
+                <dd><input type="date" name="endDate" value="${param.get("endDate")}"></dd>
             </dl>
             <dl>
                 <dt>Start time:</dt>
-                <dd><input type="time" name="startTime"></dd>
+                <dd><input type="time" name="startTime" value="${param.get("startTime")}"></dd>
             </dl>
             <dl>
                 <dt>End time:</dt>
-                <dd><input type="time" name="endTime"></dd>
+                <dd><input type="time" name="endTime" value="${param.get("endTime")}"></dd>
             </dl>
             <button type="submit" formaction="${pageContext.request.contextPath}/meals/filter">Filter</button>
         </form>

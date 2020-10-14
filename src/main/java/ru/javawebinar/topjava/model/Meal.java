@@ -11,7 +11,6 @@ public class Meal extends AbstractBaseEntity {
 
     private final int calories;
 
-
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this(null, dateTime, description, calories );
     }
@@ -43,7 +42,6 @@ public class Meal extends AbstractBaseEntity {
         return dateTime.toLocalTime();
     }
 
-
     @Override
     public String toString() {
         return "Meal{" +
@@ -53,5 +51,4 @@ public class Meal extends AbstractBaseEntity {
                 ", calories=" + calories +
                 '}';
     }
-
 }

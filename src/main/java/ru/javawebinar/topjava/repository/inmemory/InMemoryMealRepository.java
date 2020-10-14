@@ -23,15 +23,14 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        repository.putIfAbsent(userId, new HashMap<>());
+        Map<Integer, Meal> userMeals = repository.computeIfAbsent(userId, key -> new HashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
-            Map<Integer, Meal> newMealMap = new HashMap<>();
-            repository.get(userId).put(meal.getId(), meal);
+            userMeals.put(meal.getId(), meal);
             return meal;
         }
         // handle case: update, but not present in storage
-        return getValidUserMeals(userId).computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
+        return userMeals.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
 
     @Override
@@ -50,14 +49,12 @@ public class InMemoryMealRepository implements MealRepository {
         return getValidUserMeals(userId).values().stream()
                 .sorted(Comparator.comparing(Meal::getDate).reversed())
                 .collect(Collectors.toList());
-
     }
 
     @Override
-    public List<Meal> getFilteredByDate(LocalDate startDate, LocalDate endDate, int userId) {
-        return getValidUserMeals(userId).values().stream()
-                .filter(meal -> DateTimeUtil.isBetweenHalfOpen(meal.getDate(), startDate, endDate))
-                .sorted(Comparator.comparing(Meal::getDate).reversed())
+    public List<Meal> getAll(LocalDate startDate, LocalDate endDate, int userId) {
+        return getAll(userId).stream()
+                .filter(meal -> DateTimeUtil.isBetweenHalfClose(meal.getDate(), startDate, endDate))
                 .collect(Collectors.toList());
     }
 

@@ -11,6 +11,10 @@ public class DateTimeUtil {
         return toCheck.compareTo(start) >= 0 && toCheck.compareTo(end) < 0;
     }
 
+    public static <T> boolean isBetweenHalfClose(Comparable<T> toCheck, T start, T end) {
+        return toCheck.compareTo(start) >= 0 && toCheck.compareTo(end) <= 0;
+    }
+
     public static String toString(LocalDateTime ldt) {
         return ldt == null ? "" : ldt.format(DATE_TIME_FORMATTER);
     }

@@ -60,10 +60,10 @@ public class MealRestController {
 
     public List<MealTo> getFilteredByDateAndTime(MealFilter filter) {
         log.info("get filtered with following filter" + filter);
-
-        return MealsUtil.filterByPredicate(
+        return MealsUtil.getFilteredTos(
                 service.getFilteredByDate(filter, SecurityUtil.authUserId()),
                 SecurityUtil.authUserCaloriesPerDay(),
-                meal -> DateTimeUtil.isBetweenHalfOpen(meal.getTime(), filter.getStartTime(), filter.getEndTime()));
+                filter.getStartTime(),
+                filter.getEndTime());
     }
 }
