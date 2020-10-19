@@ -60,13 +60,13 @@ public class MealServiceTest {
     @Test
     public void getAll() throws Exception {
         List<Meal> actualUserMeals = service.getAll(USER_ID);
-        MealTestData.assertMatch(actualUserMeals, userBreakfast, userLunch, userDinner,
-                userSecondDayBreakfast, userSecondDayLunch, userSecondDaySnack,
-                userSecondDayDinner);
+        MealTestData.assertMatch(actualUserMeals, userSecondDayDinner, userSecondDayLunch,
+                userSecondDayBreakfast, userEdgeMeal, userDinner,
+                userLunch, userBreakfast);
         List<Meal> actualAdminMeals = service.getAll(ADMIN_ID);
-        MealTestData.assertMatch(actualAdminMeals, adminBreakfast, adminLunch, adminDinner,
-                adminSecondDayBreakfast, adminSecondDayLunch, adminSecondDaySnack,
-                adminSecondDayDinner);
+        MealTestData.assertMatch(actualAdminMeals, adminSecondDayDinner, adminSecondDaySnack,
+                adminSecondDayLunch, adminSecondDayBreakfast, adminDinner,
+                adminLunch, adminBreakfast);
     }
 
     @Test
@@ -102,6 +102,6 @@ public class MealServiceTest {
     @Test
     public void getBetweenInclusive() throws Exception {
         List<Meal> meals = service.getBetweenInclusive(userBreakfast.getDateTime().toLocalDate(), userBreakfast.getDateTime().toLocalDate(), USER_ID);
-        assertMatch(meals, userBreakfast, userDinner, userLunch);
+        assertMatch(meals, userDinner, userLunch, userBreakfast);
     }
 }

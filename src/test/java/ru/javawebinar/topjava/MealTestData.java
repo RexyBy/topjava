@@ -4,7 +4,6 @@ import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
@@ -20,7 +19,7 @@ public class MealTestData {
     public static final Meal userDinner = new Meal(nextId++, LocalDateTime.of(2020, 10, 15, 18, 0), "Ужин", 500);
     public static final Meal userSecondDayBreakfast = new Meal(nextId++, LocalDateTime.of(2020, 10, 16, 10, 0), "Завтрак", 500);
     public static final Meal userSecondDayLunch = new Meal(nextId++, LocalDateTime.of(2020, 10, 16, 15, 0), "Обед", 1000);
-    public static final Meal userSecondDaySnack = new Meal(nextId++, LocalDateTime.of(2020, 10, 16, 16, 0), "Перекус", 120);
+    public static final Meal userEdgeMeal = new Meal(nextId++, LocalDateTime.of(2020, 10, 16, 0, 0), "Еда на граничное значение", 120);
     public static final Meal userSecondDayDinner = new Meal(nextId++, LocalDateTime.of(2020, 10, 16, 22, 0), "Ужин", 500);
 
     public static final Meal adminBreakfast = new Meal(nextId++, LocalDateTime.of(2020, 10, 15, 10, 0), "Завтрак Админа", 400);
@@ -48,13 +47,10 @@ public class MealTestData {
     }
 
     public static void assertMatch(Iterable<Meal> actual, Meal... expected) {
-        List<Meal> expectedMeals = Arrays.asList(expected).stream()
-                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                .collect(Collectors.toList());
-        assertMatch(actual, expectedMeals);
+        assertMatch(actual, Arrays.asList(expected));
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
-        assertThat(actual).usingElementComparatorOnFields("id", "dateTime", "description", "calories").isEqualTo(expected);
+        assertThat(actual).usingFieldByFieldElementComparator().isEqualTo(expected);
     }
 }
