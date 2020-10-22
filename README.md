@@ -1,4 +1,4 @@
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/d1a6f6d0b4404f32bd59394074a3c1b6)](https://www.codacy.com/manual/javawebinar/topjava)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/8114c4a82065465bb62ea32540dc0290)](https://www.codacy.com/gh/RexyBy/topjava/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RexyBy/topjava&amp;utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.org/JavaWebinar/topjava.svg?branch=master)](https://travis-ci.org/JavaWebinar/topjava)
 
 Java Enterprise Online Project 
