@@ -1,13 +1,14 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.ClassRule;
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
+import org.junit.rules.Stopwatch;
 import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,9 +19,8 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.Month;
-import java.time.temporal.ChronoUnit;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -34,38 +34,26 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    private static StringBuilder summary = new StringBuilder();
     private static final String DELIMITER = "========================================";
-
-    @ClassRule
-    public static final ExternalResource resource = new ExternalResource() {
-        @Override
-        protected void after() {
-            System.out.println("\nSUMMARY:\n" + DELIMITER);
-            System.out.println(summary);
-        }
-    };
+    private static StringBuilder summary = new StringBuilder("\nSUMMARY:\n" + DELIMITER + "\n");
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
     @Rule
-    public final TestRule watcher = new TestWatcher() {
-        private LocalTime startTime;
-
+    public final TestRule watcher = new Stopwatch() {
         @Override
-        protected void starting(Description description) {
-            System.out.println("\n" + description.getMethodName() + " started.\n" + DELIMITER);
-            startTime = LocalTime.now();
-        }
-
-        @Override
-        protected void finished(Description description) {
-            String testSummary = description.getMethodName() + " were done in " + startTime.until(LocalTime.now(), ChronoUnit.MILLIS) + " milliseconds.";
-            summary.append(testSummary).append("\n");
-            System.out.println(DELIMITER + "\n" + testSummary);
+        protected void finished(long nanos, Description description) {
+            summary.append(String.format("%-30s%-30s\n", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos) + "ms"));
+            log.info("\n" + description.getMethodName() + " were done in " + TimeUnit.NANOSECONDS.toMillis(nanos) + " milliseconds." + "\n");
         }
     };
 
     @Autowired
     private MealService service;
+
+    @AfterClass
+    public static void printSummary() {
+        log.info(summary.toString());
+    }
 
     @Test
     public void delete() throws Exception {
