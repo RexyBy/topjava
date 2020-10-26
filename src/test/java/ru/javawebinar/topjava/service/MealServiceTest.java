@@ -42,7 +42,7 @@ public class MealServiceTest {
     public final TestRule watcher = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            summary.append(String.format("%-30s%-30s\n", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos) + "ms"));
+            summary.append(String.format("%-30s%-30s\n", description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos) + " ms"));
             log.info("\n" + description.getMethodName() + " were done in " + TimeUnit.NANOSECONDS.toMillis(nanos) + " milliseconds." + "\n");
         }
     };
