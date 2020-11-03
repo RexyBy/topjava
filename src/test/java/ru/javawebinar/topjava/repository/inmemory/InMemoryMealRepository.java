@@ -78,4 +78,9 @@ public class InMemoryMealRepository implements MealRepository {
                         .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                         .collect(Collectors.toList());
     }
+
+    @Override
+    public Meal getWithUser(int id, int userId) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("This method is only supported by DataJpaImplementation");
+    }
 }

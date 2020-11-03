@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 
+import javax.persistence.OrderBy;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,7 +29,15 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
             """)
     List<Meal> findAllBetweenHalfOpen(@Param("startDateTime") LocalDateTime startDateTime,
                                       @Param("endDateTime") LocalDateTime endDateTime,
-                                      @Param("userId")int userId);
+                                      @Param("userId") int userId);
 
     Meal findByIdAndUserId(int id, int userid);
+
+    @OrderBy("date_time DESC")
+    @Query("""
+            SELECT m FROM Meal m
+            LEFT JOIN FETCH m.user
+            WHERE m.id=:id AND m.user.id=:userId
+            """)
+    Meal getWithUser(@Param("id") int id, @Param("userId") int userid);
 }

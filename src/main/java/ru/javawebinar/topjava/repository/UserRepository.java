@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.repository;
 
+import org.springframework.context.annotation.Profile;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.User;
 
 import java.util.List;
@@ -18,4 +20,7 @@ public interface UserRepository {
     User getByEmail(String email);
 
     List<User> getAll();
+
+    @Profile(Profiles.DATAJPA)
+    User getWithMeals(int id);
 }

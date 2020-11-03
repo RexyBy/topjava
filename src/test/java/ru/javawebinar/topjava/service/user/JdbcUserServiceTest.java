@@ -1,6 +1,5 @@
-package ru.javawebinar.topjava.service;
+package ru.javawebinar.topjava.service.user;
 
-import org.junit.Test;
 import org.springframework.test.context.ActiveProfiles;
 import ru.javawebinar.topjava.Profiles;
 
