@@ -30,7 +30,7 @@ public class MealServlet extends HttpServlet {
     public void init() {
         ClassPathXmlApplicationContext classPathContext = new ClassPathXmlApplicationContext();
         classPathContext.setConfigLocations("spring/spring-app.xml", "spring/spring-db.xml");
-        classPathContext.getEnvironment().setActiveProfiles(Profiles.POSTGRES_DB, Profiles.DATAJPA);
+        classPathContext.getEnvironment().setActiveProfiles(Profiles.getActiveDbProfile(), Profiles.DATAJPA);
         springContext = classPathContext;
         springContext.refresh();
         mealController = springContext.getBean(MealRestController.class);

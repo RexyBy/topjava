@@ -19,6 +19,7 @@ public class DataJpaMealRepository implements MealRepository {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     @Override
     public Meal save(Meal meal, int userId) {
         meal.setUser(userRepository.getOne(userId));
@@ -30,6 +31,7 @@ public class DataJpaMealRepository implements MealRepository {
         return mealRepository.save(meal);
     }
 
+    @Transactional
     @Override
     public boolean delete(int id, int userId) {
         return mealRepository.delete(id, userId) != 0;
