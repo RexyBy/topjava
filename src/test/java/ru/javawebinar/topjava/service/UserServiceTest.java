@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.service.user;
+package ru.javawebinar.topjava.service;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -8,8 +8,6 @@ import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.service.ServiceTest;
-import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
@@ -30,7 +28,6 @@ public abstract class UserServiceTest extends ServiceTest {
         cacheManager.getCache("users").clear();
     }
 
-    @Override
     @Test
     public void create() {
         User created = service.create(getNew());
@@ -47,27 +44,23 @@ public abstract class UserServiceTest extends ServiceTest {
                 service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.USER)));
     }
 
-    @Override
     @Test
     public void delete() {
         service.delete(USER_ID);
         assertThrows(NotFoundException.class, () -> service.get(USER_ID));
     }
 
-    @Override
     @Test
     public void deleteNotFound() {
         assertThrows(NotFoundException.class, () -> service.delete(NOT_FOUND));
     }
 
-    @Override
     @Test
     public void get() {
         User user = service.get(USER_ID);
         USER_MATCHER.assertMatch(user, UserTestData.user);
     }
 
-    @Override
     @Test
     public void getNotFound() {
         assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND));
@@ -79,7 +72,6 @@ public abstract class UserServiceTest extends ServiceTest {
         USER_MATCHER.assertMatch(user, admin);
     }
 
-    @Override
     @Test
     public void update() {
         User updated = getUpdated();
@@ -87,7 +79,6 @@ public abstract class UserServiceTest extends ServiceTest {
         USER_MATCHER.assertMatch(service.get(USER_ID), getUpdated());
     }
 
-    @Override
     @Test
     public void getAll() {
         List<User> all = service.getAll();

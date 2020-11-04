@@ -40,7 +40,7 @@ public abstract class JdbcMealRepository implements MealRepository {
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
-                .addValue("date_time", meal.getDateTime())
+                .addValue("date_time", convertDate(meal.getDateTime()))
                 .addValue("user_id", userId);
 
         if (meal.isNew()) {
@@ -80,11 +80,6 @@ public abstract class JdbcMealRepository implements MealRepository {
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
                 ROW_MAPPER, userId, convertDate(startDateTime), convertDate(endDateTime));
-    }
-
-    @Override
-    public Meal getWithUser(int id, int userId) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("This method is only supported by DataJpaImplementation");
     }
 
     protected abstract <T> T convertDate(LocalDateTime localDateTime);

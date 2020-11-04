@@ -1,6 +1,5 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
-import org.hibernate.Hibernate;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,13 +19,11 @@ public class DataJpaUserRepository implements UserRepository {
         this.crudRepository = crudRepository;
     }
 
-    @Transactional
     @Override
     public User save(User user) {
         return crudRepository.save(user);
     }
 
-    @Transactional
     @Override
     public boolean delete(int id) {
         return crudRepository.delete(id) != 0;
@@ -49,10 +46,6 @@ public class DataJpaUserRepository implements UserRepository {
 
     @Override
     public User getWithMeals(int id) {
-        User userWithMeals = crudRepository.getWithMeals(id);
-        if (userWithMeals == null)
-            return null;
-        Hibernate.initialize(userWithMeals);
-        return userWithMeals;
+        return crudRepository.getWithMeals(id);
     }
 }

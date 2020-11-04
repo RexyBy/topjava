@@ -1,7 +1,5 @@
 package ru.javawebinar.topjava.repository;
 
-import org.springframework.context.annotation.Profile;
-import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.User;
 
 import java.util.List;
@@ -21,6 +19,7 @@ public interface UserRepository {
 
     List<User> getAll();
 
-    @Profile(Profiles.DATAJPA)
-    User getWithMeals(int id);
+    default User getWithMeals(int id){
+        throw new UnsupportedOperationException("This method is only supported by DataJpaImplementation");
+    }
 }

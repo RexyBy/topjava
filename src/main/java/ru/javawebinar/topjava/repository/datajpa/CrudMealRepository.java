@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 
-import javax.persistence.OrderBy;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,8 +17,6 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     @Query("DELETE FROM Meal m WHERE m.id=:id AND m.user.id=:userId")
     int delete(@Param("id") int id, @Param("userId") int userId);
 
-    @Transactional
-    @Modifying
     @Query("SELECT m FROM Meal m WHERE m.user.id=:userId ORDER BY m.dateTime DESC")
     List<Meal> findAll(@Param("userId") int userId);
 
@@ -31,9 +28,8 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
                                       @Param("endDateTime") LocalDateTime endDateTime,
                                       @Param("userId") int userId);
 
-    Meal findByIdAndUserId(int id, int userid);
+    Meal findById(int id);
 
-    @OrderBy("date_time DESC")
     @Query("""
             SELECT m FROM Meal m
             LEFT JOIN FETCH m.user

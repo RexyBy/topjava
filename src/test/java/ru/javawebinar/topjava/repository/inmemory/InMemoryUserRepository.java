@@ -38,9 +38,4 @@ public class InMemoryUserRepository extends InMemoryBaseRepository<User> impleme
                 .findFirst()
                 .orElse(null);
     }
-
-    @Override
-    public User getWithMeals(int id) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("This method is only supported by DataJpaImplementation");
-    }
 }
