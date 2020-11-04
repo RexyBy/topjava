@@ -9,7 +9,6 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import java.util.List;
 
 @Repository
-
 public class DataJpaUserRepository implements UserRepository {
     private static final Sort SORT_NAME_EMAIL = Sort.by(Sort.Direction.ASC, "name", "email");
 
@@ -19,13 +18,11 @@ public class DataJpaUserRepository implements UserRepository {
         this.crudRepository = crudRepository;
     }
 
-    @Transactional
     @Override
     public User save(User user) {
         return crudRepository.save(user);
     }
 
-    @Transactional
     @Override
     public boolean delete(int id) {
         return crudRepository.delete(id) != 0;
