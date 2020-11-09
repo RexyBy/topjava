@@ -70,7 +70,6 @@
                 <configuration>
                     <container>
                         <containerId>tomcat9x</containerId>
-                        <home>E:\Tomcat</home>
                         <systemProperties>
                             <file.encoding>UTF-8</file.encoding>
                             <spring.profiles.active>tomcat,datajpa</spring.profiles.active>
