@@ -3,9 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 
 <head>
-    <base>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title><spring:message code="app.title"/></title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
     <base href="${pageContext.request.contextPath}/">
+    <link rel="stylesheet" href="resources/css/style.css">
 </head>

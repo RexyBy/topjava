@@ -98,10 +98,10 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         return jdbcTemplate.query("""
-                SELECT * FROM users 
-                LEFT JOIN (SELECT * FROM user_roles) as ur ON users.id = ur.user_id
-                ORDER BY name, email
-                """,
+                        SELECT * FROM users 
+                        LEFT JOIN (SELECT * FROM user_roles) as ur ON users.id = ur.user_id
+                        ORDER BY name, email
+                        """,
                 rs -> {
                     List<User> users = new ArrayList<>();
                     rs.next();
@@ -112,7 +112,7 @@ public class JdbcUserRepository implements UserRepository {
                 });
     }
 
-    private static User getUserFromResultSet(ResultSet rs) throws SQLException{
+    private static User getUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();
         int userId = rs.getInt("id");
         user.setId(userId);
@@ -123,7 +123,7 @@ public class JdbcUserRepository implements UserRepository {
         user.setEnabled(rs.getBoolean("enabled"));
         Set<Role> userRoles = new HashSet<>();
         user.setCaloriesPerDay(rs.getInt("calories_per_day"));
-        while (!rs.isAfterLast() && rs.getInt("id") == userId && rs.getString("role") != null){
+        while (!rs.isAfterLast() && rs.getInt("id") == userId && rs.getString("role") != null) {
             userRoles.add(Role.valueOf(rs.getString("role")));
             rs.next();
         }
@@ -132,19 +132,21 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     protected void insertRoles(List<Role> roles, User user) {
-        jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) VALUES (?,?)",
-                new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        ps.setInt(1, user.getId());
-                        ps.setString(2, roles.get(i).name());
-                    }
+        if (!roles.isEmpty()) {
+            jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) VALUES (?,?)",
+                    new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            ps.setInt(1, user.getId());
+                            ps.setString(2, roles.get(i).name());
+                        }
 
-                    @Override
-                    public int getBatchSize() {
-                        return roles.size();
+                        @Override
+                        public int getBatchSize() {
+                            return roles.size();
+                        }
                     }
-                }
-        );
+            );
+        }
     }
 }
