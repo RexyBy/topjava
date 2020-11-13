@@ -7,7 +7,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.ConstraintViolationException;
@@ -24,17 +23,11 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     protected UserService service;
 
     @Autowired
-    private CacheManager cacheManager;
-
-    @Autowired(required = false)
-    protected JpaUtil jpaUtil;
+    protected CacheManager cacheManager;
 
     @Before
     public void setUp() {
-        if(!isJdbcInProfiles()) {
-            cacheManager.getCache("users").clear();
-            jpaUtil.clear2ndLevelHibernateCache();
-        }
+        cacheManager.getCache("users").clear();
     }
 
     @Test
@@ -79,6 +72,11 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     public void getByEmail() {
         User user = service.getByEmail("admin@gmail.com");
         USER_MATCHER.assertMatch(user, admin);
+    }
+
+    @Test
+    public void getByEmailNotFound() {
+        assertThrows(NotFoundException.class, () -> service.getByEmail("NotFoundEmail@gmail.com"));
     }
 
     @Test

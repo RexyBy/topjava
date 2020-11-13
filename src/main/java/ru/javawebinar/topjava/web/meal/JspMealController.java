@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 
@@ -20,20 +21,21 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
+@RequestMapping(value = "/meals")
 public class JspMealController extends AbstractMealController {
 
     public JspMealController(MealService service) {
         super(service);
     }
 
-    @GetMapping("/meals")
-    public String getMeals (Model model){
+    @GetMapping
+    public String getMeals(Model model) {
         model.addAttribute("meals", getAll());
         return "meals";
     }
 
-    @GetMapping("/meals/filter")
-    public String getFilteredMeals (HttpServletRequest request){
+    @GetMapping("/filter")
+    public String getFilteredMeals(HttpServletRequest request) {
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
         LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
@@ -42,27 +44,27 @@ public class JspMealController extends AbstractMealController {
         return "meals";
     }
 
-    @GetMapping("meals/create")
-    public String createMealFormRedirect(HttpServletRequest request){
+    @GetMapping("/create")
+    public String createMealFormRedirect(HttpServletRequest request) {
         final Meal meal = new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000);
         request.setAttribute("meal", meal);
         return "mealForm";
     }
 
-    @GetMapping("meals/update")
-    public String updateMealFormRedirect(HttpServletRequest request){
+    @GetMapping("/update")
+    public String updateMealFormRedirect(HttpServletRequest request) {
         final Meal meal = get(getId(request));
         request.setAttribute("meal", meal);
         return "mealForm";
     }
 
-    @GetMapping("meals/delete")
-    public String deleteMeal(HttpServletRequest request){
+    @GetMapping("/delete")
+    public String deleteMeal(HttpServletRequest request) {
         delete(getId(request));
         return "redirect:/meals";
     }
 
-    @PostMapping("meals/createOrUpdate")
+    @PostMapping
     public String createUpdateMeal(HttpServletRequest request) {
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),

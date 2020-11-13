@@ -35,25 +35,6 @@ public class JdbcUserRepository implements UserRepository {
 
     private final SimpleJdbcInsert insertUser;
 
-    private static User getUserFromResultSet(ResultSet rs) throws SQLException{
-        User user = new User();
-        int userId = rs.getInt("id");
-        user.setId(userId);
-        user.setName(rs.getString("name"));
-        user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
-        user.setRegistered(rs.getDate("registered"));
-        user.setEnabled(rs.getBoolean("enabled"));
-        Set<Role> userRoles = new HashSet<>();
-        user.setCaloriesPerDay(rs.getInt("calories_per_day"));
-        while (!rs.isAfterLast() && rs.getInt("id") == userId){
-            userRoles.add(Role.valueOf(rs.getString("role")));
-            rs.next();
-        }
-        user.setRoles(userRoles);
-        return user;
-    }
-
     @Autowired
     public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertUser = new SimpleJdbcInsert(jdbcTemplate)
@@ -73,16 +54,15 @@ public class JdbcUserRepository implements UserRepository {
         if (user.isNew()) {
             Number newKey = insertUser.executeAndReturnKey(parameterSource);
             user.setId(newKey.intValue());
-            insertRoles(userRoles, user);
         } else if (namedParameterJdbcTemplate.update("""
                    UPDATE users SET name=:name, email=:email, password=:password, 
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
                 """, parameterSource) != 0) {
             jdbcTemplate.update("DELETE FROM user_roles WHERE user_id=?", user.getId());
-            insertRoles(userRoles, user);
         } else {
             return null;
         }
+        insertRoles(userRoles, user);
         return user;
     }
 
@@ -132,8 +112,25 @@ public class JdbcUserRepository implements UserRepository {
                 });
     }
 
+    private static User getUserFromResultSet(ResultSet rs) throws SQLException{
+        User user = new User();
+        int userId = rs.getInt("id");
+        user.setId(userId);
+        user.setName(rs.getString("name"));
+        user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
+        user.setRegistered(rs.getDate("registered"));
+        user.setEnabled(rs.getBoolean("enabled"));
+        Set<Role> userRoles = new HashSet<>();
+        user.setCaloriesPerDay(rs.getInt("calories_per_day"));
+        while (!rs.isAfterLast() && rs.getInt("id") == userId && rs.getString("role") != null){
+            userRoles.add(Role.valueOf(rs.getString("role")));
+            rs.next();
+        }
+        user.setRoles(userRoles);
+        return user;
+    }
 
-    @Transactional
     protected void insertRoles(List<Role> roles, User user) {
         jdbcTemplate.batchUpdate("INSERT INTO user_roles (user_id, role) VALUES (?,?)",
                 new BatchPreparedStatementSetter() {
