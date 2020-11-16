@@ -22,9 +22,6 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     @Autowired
     protected UserService service;
 
-    @Autowired
-    private CacheManager cacheManager;
-
     @Test
     public void create() {
         User created = service.create(getNew());
