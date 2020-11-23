@@ -20,7 +20,6 @@ import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ExtendWith(TimingExtension.class)
 public abstract class AbstractServiceTest {
-
     //  Check root cause in JUnit: https://github.com/junit-team/junit4/pull/778
     protected <T extends Throwable> void validateRootCause(Runnable runnable, Class<T> rootExceptionClass) {
         assertThrows(rootExceptionClass, () -> {
