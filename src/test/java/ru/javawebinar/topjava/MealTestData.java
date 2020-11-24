@@ -4,7 +4,9 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -17,8 +19,10 @@ public class MealTestData {
     public static final TestMatcher<Meal> MEAL_MATCHER = TestMatcher.usingIgnoringFieldsComparator(Meal.class, "user");
     public static final TestMatcher<MealTo> MEAL_TO_MATCHER = TestMatcher.usingIgnoringFieldsComparator(MealTo.class);
 
-    public static final String START_TIME = "2020-01-30T11:00:00";
-    public static final String END_TIME = "2020-01-31T20:01:00";
+    public static final String START_TIME = "11:00:00";
+    public static final String END_TIME = "20:01:00";
+    public static final String START_DATE = "2020-01-30";
+    public static final String END_DATE = "2020-01-31";
 
     public static final int NOT_FOUND = 10;
     public static final int MEAL1_ID = START_SEQ + 2;
@@ -52,11 +56,11 @@ public class MealTestData {
     public static List<MealTo> getMealsToBetween(){
         List<MealTo> filteredByTime = MealsUtil.getFilteredTos(meals,
                 MealsUtil.DEFAULT_CALORIES_PER_DAY,
-                LocalDateTime.parse(START_TIME).toLocalTime(),
-                LocalDateTime.parse(END_TIME).toLocalTime());
+                LocalTime.parse(START_TIME),
+                LocalTime.parse(END_TIME));
         return filteredByTime.stream()
-                .filter(next -> next.getDateTime().toLocalDate().isAfter(LocalDateTime.parse(START_TIME).toLocalDate().minusDays(1)))
-                .filter(next ->  next.getDateTime().toLocalDate().isBefore(LocalDateTime.parse(END_TIME).toLocalDate().plusDays(1)))
+                .filter(next -> next.getDateTime().toLocalDate().isAfter(LocalDate.parse(START_DATE).minusDays(1)))
+                .filter(next ->  next.getDateTime().toLocalDate().isBefore(LocalDate.parse(END_DATE).plusDays(1)))
                 .collect(Collectors.toList());
     }
 }
