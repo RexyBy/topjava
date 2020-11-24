@@ -4,15 +4,21 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.of;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
     public static final TestMatcher<Meal> MEAL_MATCHER = TestMatcher.usingIgnoringFieldsComparator(Meal.class, "user");
+    public static final TestMatcher<MealTo> MEAL_TO_MATCHER = TestMatcher.usingIgnoringFieldsComparator(MealTo.class);
+
+    public static final String START_TIME = "2020-01-30T11:00:00";
+    public static final String END_TIME = "2020-01-31T20:01:00";
 
     public static final int NOT_FOUND = 10;
     public static final int MEAL1_ID = START_SEQ + 2;
@@ -29,6 +35,7 @@ public class MealTestData {
     public static final Meal adminMeal2 = new Meal(ADMIN_MEAL_ID + 1, of(2020, Month.JANUARY, 31, 21, 0), "Админ ужин", 1500);
 
     public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
+    public static final List<Meal> mealsWithoutDeletedItem = List.of(meal7, meal6, meal5, meal4, meal3, meal2);
 
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
@@ -40,5 +47,16 @@ public class MealTestData {
 
     public static List<MealTo> getMealsTo() {
         return MealsUtil.getTos(meals, MealsUtil.DEFAULT_CALORIES_PER_DAY);
+    }
+
+    public static List<MealTo> getMealsToBetween(){
+        List<MealTo> filteredByTime = MealsUtil.getFilteredTos(meals,
+                MealsUtil.DEFAULT_CALORIES_PER_DAY,
+                LocalDateTime.parse(START_TIME).toLocalTime(),
+                LocalDateTime.parse(END_TIME).toLocalTime());
+        return filteredByTime.stream()
+                .filter(next -> next.getDateTime().toLocalDate().isAfter(LocalDateTime.parse(START_TIME).toLocalDate().minusDays(1)))
+                .filter(next ->  next.getDateTime().toLocalDate().isBefore(LocalDateTime.parse(END_TIME).toLocalDate().plusDays(1)))
+                .collect(Collectors.toList());
     }
 }
