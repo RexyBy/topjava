@@ -36,6 +36,11 @@ public class MealTestData {
     public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
     public static final List<Meal> mealsWithoutDeletedItem = List.of(meal7, meal6, meal5, meal4, meal3, meal2);
 
+    public static final List<MealTo> filteredMeals = List.of(
+            MealsUtil.createTo(MealTestData.meal3, false),
+            MealsUtil.createTo(MealTestData.meal2, false)
+    );
+
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
     }
