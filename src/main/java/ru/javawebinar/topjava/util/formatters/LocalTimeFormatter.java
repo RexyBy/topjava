@@ -11,7 +11,7 @@ import java.util.Locale;
 public final class LocalTimeFormatter implements Formatter<LocalTime> {
     @Override
     public LocalTime parse(String text, Locale locale) throws ParseException {
-        return text.length() == 0 ? null : DateTimeUtil.parseLocalTime(text);
+        return DateTimeUtil.parseLocalTime(text);
     }
 
     @Override

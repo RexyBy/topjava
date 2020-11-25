@@ -11,7 +11,7 @@ import java.util.Locale;
 public final class LocalDateFormatter implements Formatter<LocalDate> {
     @Override
     public LocalDate parse(String text, Locale locale) throws ParseException {
-        return text.length() == 0 ? null : DateTimeUtil.parseLocalDate(text);
+        return DateTimeUtil.parseLocalDate(text);
     }
 
     @Override

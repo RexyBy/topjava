@@ -10,12 +10,16 @@ import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class MealRestControllerTest extends AbstractControllerTest {
     private final String REST_URL = MealRestController.REST_URL + "/";
@@ -29,19 +33,40 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MealTestData.MEAL_TO_MATCHER.contentJson(MealTestData.getMealsTo()));
+                .andExpect(result -> assertThat(
+                        TestUtil.readListFromJsonMvcResult(result, MealTo.class)).
+                        isEqualTo(MealTestData.getMealsTo())
+                );
     }
 
     @Test
     void getBetween() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "filter")
-                .queryParam("startTime",MealTestData.START_TIME )
-                .queryParam("endTime",MealTestData.END_TIME )
-                .queryParam("startDate",MealTestData.START_DATE )
-                .queryParam("endDate",MealTestData.END_DATE ))
+                .queryParam("startTime", MealTestData.START_TIME)
+                .queryParam("endTime", MealTestData.END_TIME)
+                .queryParam("startDate", MealTestData.START_DATE)
+                .queryParam("endDate", MealTestData.END_DATE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MealTestData.MEAL_TO_MATCHER.contentJson(MealTestData.getMealsToBetween()));
+                .andExpect(result -> assertThat(
+                        TestUtil.readListFromJsonMvcResult(result, MealTo.class)).
+                        isEqualTo(
+                                List.of(
+                                        new MealTo(MealTestData.meal3, false),
+                                        new MealTo(MealTestData.meal2, false)
+                                )));
+    }
+
+    @Test
+    void getBetweenWithNullParams() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
+                .queryParam("startTime", ""))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(result -> assertThat(
+                        TestUtil.readListFromJsonMvcResult(result, MealTo.class)).
+                        isEqualTo(MealTestData.getMealsTo())
+                );
     }
 
     @Test
@@ -70,11 +95,11 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isCreated());
 
         Meal createdMeal = TestUtil.readFromJson(action, Meal.class);
-        int newMealID = createdMeal.getId();
-        newMeal.setId(newMealID);
+        int newMealId = createdMeal.getId();
+        newMeal.setId(newMealId);
 
-        MealTestData.MEAL_MATCHER.assertMatch(newMeal, createdMeal);
-        MealTestData.MEAL_MATCHER.assertMatch(service.get(newMealID, UserTestData.USER_ID), newMeal);
+        MealTestData.MEAL_MATCHER.assertMatch(createdMeal, newMeal);
+        MealTestData.MEAL_MATCHER.assertMatch(service.get(newMealId, UserTestData.USER_ID), newMeal);
     }
 
     @Test
