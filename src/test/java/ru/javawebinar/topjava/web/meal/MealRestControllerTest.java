@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.TestUtil;
@@ -16,10 +17,10 @@ import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class MealRestControllerTest extends AbstractControllerTest {
     private final String REST_URL = MealRestController.REST_URL + "/";
@@ -33,10 +34,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(result -> assertThat(
-                        TestUtil.readListFromJsonMvcResult(result, MealTo.class)).
-                        isEqualTo(MealTestData.getMealsTo())
-                );
+                .andExpect(matchLists(MealTestData.getMealsTo()));
     }
 
     @Test
@@ -48,13 +46,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .queryParam("endDate", MealTestData.END_DATE))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(result -> assertThat(
-                        TestUtil.readListFromJsonMvcResult(result, MealTo.class)).
-                        isEqualTo(
-                                List.of(
-                                        new MealTo(MealTestData.meal3, false),
-                                        new MealTo(MealTestData.meal2, false)
-                                )));
+                .andExpect(matchLists(MealTestData.filteredMeals));
     }
 
     @Test
@@ -63,10 +55,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .queryParam("startTime", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(result -> assertThat(
-                        TestUtil.readListFromJsonMvcResult(result, MealTo.class)).
-                        isEqualTo(MealTestData.getMealsTo())
-                );
+                .andExpect(matchLists(MealTestData.getMealsTo()));
     }
 
     @Test
@@ -113,5 +102,9 @@ class MealRestControllerTest extends AbstractControllerTest {
         MealTestData.MEAL_MATCHER.assertMatch(
                 service.get(MealTestData.MEAL1_ID, UserTestData.USER_ID),
                 updatedMeal);
+    }
+
+    private ResultMatcher matchLists(List<MealTo> expected) {
+        return result -> assertThat(TestUtil.readListFromJsonMvcResult(result, MealTo.class)).isEqualTo(expected);
     }
 }

@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.to;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import ru.javawebinar.topjava.model.Meal;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -17,14 +16,6 @@ public class MealTo {
     private final int calories;
 
     private final boolean excess;
-
-    public MealTo(Meal meal, boolean excess) {
-        this.id = meal.getId();
-        this.dateTime = meal.getDateTime();
-        this.description = meal.getDescription();
-        this.calories = meal.getCalories();
-        this.excess = excess;
-    }
 
     @JsonCreator
     public MealTo(@JsonProperty("id") Integer id,
@@ -77,7 +68,7 @@ public class MealTo {
         MealTo mealTo = (MealTo) o;
         return calories == mealTo.calories &&
                 excess == mealTo.excess &&
-                id.equals(mealTo.id) &&
+                Objects.equals(id, mealTo.id) &&
                 Objects.equals(dateTime, mealTo.dateTime) &&
                 Objects.equals(description, mealTo.description);
     }

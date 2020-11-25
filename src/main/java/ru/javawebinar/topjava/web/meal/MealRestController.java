@@ -18,6 +18,7 @@ import java.util.List;
 public class MealRestController extends AbstractMealController {
     static final String REST_URL = "/rest/meals";
 
+    @Override
     @GetMapping
     public List<MealTo> getAll() {
         return super.getAll();
@@ -35,11 +36,13 @@ public class MealRestController extends AbstractMealController {
                 endTime);
     }
 
+    @Override
     @GetMapping(value = "/{id}")
     public Meal get(@PathVariable int id) {
         return super.get(id);
     }
 
+    @Override
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
@@ -56,6 +59,7 @@ public class MealRestController extends AbstractMealController {
         return ResponseEntity.created(newResourceURI).body(created);
     }
 
+    @Override
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@RequestBody Meal meal, @PathVariable int id) {
