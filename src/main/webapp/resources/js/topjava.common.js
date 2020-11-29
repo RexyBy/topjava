@@ -2,18 +2,18 @@ var form;
 
 function makeEditable() {
     form = $('#detailsForm');
-    $(".delete").click(function () {
-        if (confirm('Are you sure?')) {
-            deleteRow($(this).attr("id"));
-        }
-    });
-
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });
 
     // solve problem with cache in IE: https://stackoverflow.com/a/4303862/548473
     $.ajaxSetup({cache: false});
+}
+
+function deleteConfirmation(id){
+    if (confirm('Are you sure?')) {
+        deleteRow(id);
+    }
 }
 
 function add() {
