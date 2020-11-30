@@ -13,6 +13,49 @@
     <div class="container">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
 
+        <div class="card border-dark">
+            <div class="card-body pb-0">
+                <form id="filter">
+                    <div class="row">
+                        <div class="offset-1 col-2">
+                            <label for="startDate" class="col-form-label"><spring:message code="meal.startDate"/></label>
+                            <input type="date" class="form-control" id="startDate" name="startDate"
+                                   placeholder="<spring:message code="meal.startDate"/>" autocomplete="off">
+                        </div>
+                        <div class="col-2">
+                            <label for="endDate" class="col-form-label"><spring:message code="meal.endDate"/></label>
+                            <input type="date"  class="form-control" id="endDate" name="endDate"
+                                   placeholder="<spring:message code="meal.endDate"/>" autocomplete="off">
+                        </div>
+
+                        <div class="offset-2 col-2">
+                                <label for="startTime" class="col-form-label"><spring:message code="meal.startTime"/></label>
+                                <input type="time"  class="form-control" id="startTime" name="startTime"
+                                       placeholder="<spring:message code="meal.startTime"/>" autocomplete="off">
+                        </div>
+                        <div class="col-2">
+                                <label for="endTime" class="col-form-label"><spring:message code="meal.endTime"/></label>
+                                <input type="time" class="form-control" id="endTime" name="endTime"
+                                       placeholder="<spring:message code="meal.endTime"/>" autocomplete="off">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card-footer text-right">
+                <button class="btn btn-danger" onclick="clearFilter()">
+                    <span class="fa fa-remove"></span>
+                    <spring:message code="common.cancel"/>
+                </button>
+                <button class="btn btn-primary" onclick="updateFilteredTable()">
+                    <span class="fa fa-filter"></span>
+                    <spring:message code="meal.filter"/>
+                </button>
+            </div>
+        </div>
+
+        <br>
+
         <button class="btn btn-primary" onclick="add()">
             <span class="fa fa-plus"></span>
             <spring:message code="common.add"/>
@@ -40,7 +83,8 @@
                     <td>${meal.description}</td>
                     <td>${meal.calories}</td>
                     <td><a><span class="fa fa-pencil"></span></a></td>
-                    <td><a class="delete" onclick="deleteConfirmation(${meal.id})"><span class="fa fa-remove"></span></a></td>
+                    <td><a class="delete" onclick="deleteConfirmation(${meal.id})"><span
+                            class="fa fa-remove"></span></a></td>
                 </tr>
             </c:forEach>
         </table>

@@ -10,7 +10,7 @@ function makeEditable() {
     $.ajaxSetup({cache: false});
 }
 
-function deleteConfirmation(id){
+function deleteConfirmation(id) {
     if (confirm('Are you sure?')) {
         deleteRow(id);
     }
@@ -32,9 +32,19 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
-    });
+    let isFilterEmpty = true;
+    $('#filter').find(":input").each(function () {
+        isFilterEmpty = isFilterEmpty && $.trim($(this).val()) === "";
+    })
+    if (isFilterEmpty) {
+        $.get(ctx.ajaxUrl, updateTableByData);
+    }else{
+        updateFilteredTable();
+    }
+}
+
+function updateTableByData(data) {
+    ctx.datatableApi.clear().rows.add(data).draw();
 }
 
 function save() {
