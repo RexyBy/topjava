@@ -15,7 +15,7 @@ public abstract class AbstractUserController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private UserService service;
+    protected UserService service;
 
     public List<User> getAll() {
         log.info("getAll");
@@ -47,5 +47,15 @@ public abstract class AbstractUserController {
     public User getByMail(String email) {
         log.info("getByEmail {}", email);
         return service.getByEmail(email);
+    }
+
+    public User getWithMeals(int id) {
+        log.info("getWithMeals with id{}", id);
+        return service.getWithMeals(id);
+    }
+
+    public void setUserState(boolean isEnabled, int id) {
+        log.info("{} user with id={}", isEnabled ? "Enable" : "Disable", id);
+        service.setState(isEnabled, id);
     }
 }
