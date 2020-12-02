@@ -7,10 +7,12 @@ function enable(checkBox, id) {
         type: "PATCH",
         url: ctx.ajaxUrl + id,
         data: "isEnabled=" + isOn,
-        success: checkBox.parents("tr").attr("data-userEnabled", isOn)
     }).done(function () {
+        checkBox.parents("tr").attr("data-userEnabled", isOn)
         successNoty(isOn ? "Enabled" : "Disabled");
-    });
+    }).fail(function () {
+            checkBox[0].checked = !isOn;
+        });
 }
 
 
