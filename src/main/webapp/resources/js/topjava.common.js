@@ -10,7 +10,7 @@ function makeEditable() {
     $.ajaxSetup({cache: false});
 }
 
-function deleteConfirmation(id) {
+function deleteWithConfirmation(id) {
     if (confirm('Are you sure?')) {
         deleteRow(id);
     }
@@ -32,15 +32,7 @@ function deleteRow(id) {
 }
 
 function updateTable() {
-    let isFilterEmpty = true;
-    $('#filter').find(":input").each(function () {
-        isFilterEmpty = isFilterEmpty && $.trim($(this).val()) === "";
-    })
-    if (isFilterEmpty) {
-        $.get(ctx.ajaxUrl, updateTableByData);
-    }else{
-        updateFilteredTable();
-    }
+    updateSpecificTable();
 }
 
 function updateTableByData(data) {

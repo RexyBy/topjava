@@ -18,25 +18,27 @@
                 <form id="filter">
                     <div class="row">
                         <div class="offset-1 col-2">
-                            <label for="startDate" class="col-form-label"><spring:message code="meal.startDate"/></label>
+                            <label for="startDate" class="col-form-label"><spring:message
+                                    code="meal.startDate"/></label>
                             <input type="date" class="form-control" id="startDate" name="startDate"
                                    placeholder="<spring:message code="meal.startDate"/>" autocomplete="off">
                         </div>
                         <div class="col-2">
                             <label for="endDate" class="col-form-label"><spring:message code="meal.endDate"/></label>
-                            <input type="date"  class="form-control" id="endDate" name="endDate"
+                            <input type="date" class="form-control" id="endDate" name="endDate"
                                    placeholder="<spring:message code="meal.endDate"/>" autocomplete="off">
                         </div>
 
                         <div class="offset-2 col-2">
-                                <label for="startTime" class="col-form-label"><spring:message code="meal.startTime"/></label>
-                                <input type="time"  class="form-control" id="startTime" name="startTime"
-                                       placeholder="<spring:message code="meal.startTime"/>" autocomplete="off">
+                            <label for="startTime" class="col-form-label"><spring:message
+                                    code="meal.startTime"/></label>
+                            <input type="time" class="form-control" id="startTime" name="startTime"
+                                   placeholder="<spring:message code="meal.startTime"/>" autocomplete="off">
                         </div>
                         <div class="col-2">
-                                <label for="endTime" class="col-form-label"><spring:message code="meal.endTime"/></label>
-                                <input type="time" class="form-control" id="endTime" name="endTime"
-                                       placeholder="<spring:message code="meal.endTime"/>" autocomplete="off">
+                            <label for="endTime" class="col-form-label"><spring:message code="meal.endTime"/></label>
+                            <input type="time" class="form-control" id="endTime" name="endTime"
+                                   placeholder="<spring:message code="meal.endTime"/>" autocomplete="off">
                         </div>
                     </div>
                 </form>
@@ -47,7 +49,7 @@
                     <span class="fa fa-remove"></span>
                     <spring:message code="common.cancel"/>
                 </button>
-                <button class="btn btn-primary" onclick="updateFilteredTable()">
+                <button class="btn btn-primary" onclick="updateTable()">
                     <span class="fa fa-filter"></span>
                     <spring:message code="meal.filter"/>
                 </button>
@@ -83,7 +85,7 @@
                     <td>${meal.description}</td>
                     <td>${meal.calories}</td>
                     <td><a><span class="fa fa-pencil"></span></a></td>
-                    <td><a class="delete" onclick="deleteConfirmation(${meal.id})"><span
+                    <td><a class="delete" onclick="deleteWithConfirmation(${meal.id})"><span
                             class="fa fa-remove"></span></a></td>
                 </tr>
             </c:forEach>

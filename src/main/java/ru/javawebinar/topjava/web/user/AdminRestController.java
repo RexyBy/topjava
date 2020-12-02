@@ -57,7 +57,7 @@ public class AdminRestController extends AbstractUserController {
         return super.getByMail(email);
     }
 
-    @PostMapping(value = "/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
     public void setUserState(boolean isEnabled, @PathVariable int id) {
         super.setUserState(isEnabled, id);

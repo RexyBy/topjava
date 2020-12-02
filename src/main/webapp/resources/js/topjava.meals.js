@@ -1,12 +1,5 @@
 var ctx;
-
-function updateFilteredTable() {
-    $.ajax({
-        type: "GET",
-        url: ctx.ajaxUrl + "filter",
-        data: $('#filter').serialize()
-    }).done(updateTableByData);
-}
+var updateSpecificTable;
 
 function clearFilter() {
     $('#filter')[0].reset();
@@ -46,5 +39,12 @@ $(function () {
             ]
         })
     };
+    updateSpecificTable = function () {
+        $.ajax({
+            type: "GET",
+            url: ctx.ajaxUrl + "filter",
+            data: $('#filter').serialize()
+        }).done(updateTableByData);
+    }
     makeEditable();
 });

@@ -1,21 +1,18 @@
 var ctx;
+var updateSpecificTable;
 
 function enable(checkBox, id) {
     let isOn = checkBox[0].checked;
-    setOpacity(checkBox.parents("tr"), isOn ? 1 : 0.3)
     $.ajax({
-        type: "POST",
+        type: "PATCH",
         url: ctx.ajaxUrl + id,
-        data: "isEnabled=" + isOn
+        data: "isEnabled=" + isOn,
+        success: checkBox.parents("tr").attr("data-userEnabled", isOn)
     }).done(function () {
-        updateTable();
         successNoty(isOn ? "Enabled" : "Disabled");
     });
 }
 
-function setOpacity(row, opacity) {
-    row.css("opacity", opacity);
-}
 
 // $(document).ready(function () {
 $(function () {
@@ -58,5 +55,8 @@ $(function () {
             ]
         })
     };
+    updateSpecificTable = function () {
+        $.get(ctx.ajaxUrl, updateTableByData);
+    }
     makeEditable();
 });
