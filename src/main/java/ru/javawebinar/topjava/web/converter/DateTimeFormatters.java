@@ -1,13 +1,8 @@
 package ru.javawebinar.topjava.web.converter;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import org.springframework.format.Formatter;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -44,27 +39,8 @@ public class DateTimeFormatters {
         }
     }
 
-    public static class JsonLocalDateTimeDeserializer extends StdDeserializer<LocalDateTime> {
-        private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm[:ss]");
-
-        public JsonLocalDateTimeDeserializer() {
-            this(null);
-        }
-
-        public JsonLocalDateTimeDeserializer(Class<LocalDateTime> t) {
-            super(t);
-        }
-
-        @Override
-        public LocalDateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            String dateTimeString = node.get("dateTime").asText();
-            return LocalDateTime.parse(dateTimeString, formatter);
-        }
-    }
-
     public static class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
-        private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm[:ss]");
+        private static DateTimeFormatter formatter = DateTimeUtil.DATE_TIME_FORMATTER;
 
         @Override
         public LocalDateTime parse(String text, Locale locale) {
