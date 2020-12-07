@@ -1,36 +1,17 @@
 package ru.javawebinar.topjava.to;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.hibernate.validator.constraints.Range;
-import org.springframework.format.annotation.DateTimeFormat;
-import ru.javawebinar.topjava.web.converter.DateTimeFormatters;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.beans.ConstructorProperties;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class MealTo extends BaseTo {
-
-    @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE)
-    @JsonDeserialize(using = DateTimeFormatters.JsonLocalDateTimeDeserializer.class)
     private final LocalDateTime dateTime;
-
-    @NotBlank
-    @Size(min = 2, max = 120)
     private final String description;
-
-    @NotNull
-    @Range(min = 10, max = 5000)
-    private final Integer calories;
-
-    private final Boolean excess;
+    private final int calories;
+    private final boolean excess;
 
     @ConstructorProperties({"id", "dateTime", "description", "calories", "excess"})
-    public MealTo(Integer id, LocalDateTime dateTime, String description, Integer calories, Boolean excess) {
+    public MealTo(Integer id, LocalDateTime dateTime, String description, int calories, boolean excess) {
         super(id);
         this.dateTime = dateTime;
         this.description = description;
@@ -59,8 +40,8 @@ public class MealTo extends BaseTo {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MealTo mealTo = (MealTo) o;
-        return Objects.equals(calories, mealTo.calories) &&
-                Objects.equals(excess, mealTo.excess) &&
+        return calories == mealTo.calories &&
+                excess == mealTo.excess &&
                 Objects.equals(id, mealTo.id) &&
                 Objects.equals(dateTime, mealTo.dateTime) &&
                 Objects.equals(description, mealTo.description);
