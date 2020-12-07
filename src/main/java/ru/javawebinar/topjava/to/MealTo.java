@@ -1,7 +1,9 @@
 package ru.javawebinar.topjava.to;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
+import ru.javawebinar.topjava.web.converter.DateTimeFormatters;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,7 +15,8 @@ import java.util.Objects;
 public class MealTo extends BaseTo {
 
     @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.NONE)
+    @JsonDeserialize(using = DateTimeFormatters.JsonLocalDateTimeDeserializer.class)
     private final LocalDateTime dateTime;
 
     @NotBlank
