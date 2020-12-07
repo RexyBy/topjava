@@ -40,16 +40,15 @@ public class DateTimeFormatters {
     }
 
     public static class LocalDateTimeFormatter implements Formatter<LocalDateTime> {
-        private static DateTimeFormatter formatter = DateTimeUtil.DATE_TIME_FORMATTER;
 
         @Override
         public LocalDateTime parse(String text, Locale locale) {
-            return LocalDateTime.parse(text, formatter);
+            return LocalDateTime.parse(text, DateTimeUtil.DATE_TIME_FORMATTER);
         }
 
         @Override
         public String print(LocalDateTime lt, Locale locale) {
-            return lt.format(formatter);
+            return lt.format(DateTimeUtil.DATE_TIME_FORMATTER);
         }
     }
 }
