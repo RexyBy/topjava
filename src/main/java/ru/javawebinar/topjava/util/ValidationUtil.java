@@ -78,11 +78,15 @@ public class ValidationUtil {
         return result;
     }
 
-    public static ResponseEntity<String> getErrorResponse(BindingResult result) {
-        return ResponseEntity.unprocessableEntity().body(
-                result.getFieldErrors().stream()
+    public static void checkBindingForErrors(BindingResult result) {
+        if (result.hasErrors()){
+            throw new IllegalRequestDataException(getErrorResponseText(result));
+        }
+    }
+
+    public static String getErrorResponseText(BindingResult result) {
+        return result.getFieldErrors().stream()
                         .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                        .collect(Collectors.joining("<br>"))
-        );
+                        .collect(Collectors.joining("<br>"));
     }
 }
