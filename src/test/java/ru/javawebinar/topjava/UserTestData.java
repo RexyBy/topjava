@@ -54,4 +54,15 @@ public class UserTestData {
     public static String jsonWithPassword(User user, String passw) {
         return JsonUtil.writeAdditionProps(user, "password", passw);
     }
+
+    public static String getInvalidJson() {
+        return """             
+                {
+                     "name": "",
+                     "email": "use",
+                     "password": "",
+                     "roles": ["USER"]
+                }
+                """;
+    }
 }
