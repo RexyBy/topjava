@@ -62,7 +62,7 @@ public class ExceptionInfoHandler {
     private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String message) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
         if (message == null){
-            message = rootCause.toString();
+            message = rootCause.getMessage();
         }
         logErrorInfo(req, rootCause, logException, errorType);
         return new ErrorInfo(req.getRequestURL(), errorType, message);
