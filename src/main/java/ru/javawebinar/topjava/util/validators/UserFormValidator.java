@@ -6,6 +6,7 @@ import org.springframework.validation.Validator;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.List;
 
@@ -28,7 +29,8 @@ public class UserFormValidator implements Validator {
         UserTo userTo = (UserTo) target;
         List<User> allUsers = userService.getAll();
         for (User user : allUsers) {
-            if (userTo.getEmail().toLowerCase().equals(user.getEmail().toLowerCase())) {
+            if (user.getId() != SecurityUtil.authUserId()
+                    && userTo.getEmail().toLowerCase().equals(user.getEmail().toLowerCase())) {
                 errors.rejectValue("email", "error.emailIsUsed");
                 break;
             }
