@@ -1,16 +1,19 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
-import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -148,7 +151,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void createInvalid() throws Exception{
+    void createInvalid() throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
@@ -158,12 +161,42 @@ class AdminRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void updateInvalid() throws Exception{
+    void updateInvalid() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
                 .content(getInvalidJson()))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity());
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void createWithDuplicatedEmail() throws Exception {
+        User newUser = UserTestData.getNew();
+        newUser.setEmail(user.getEmail());
+        MvcResult result = perform(MockMvcRequestBuilders.post(REST_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(UserTestData.jsonWithPassword(newUser, "newPass")))
+                .andExpect(status().isConflict())
+                .andReturn();
+
+        Assertions.assertTrue(result.getResponse().getContentAsString().contains(DUPLICATED_EMAIL_RESPONSE_TEXT));
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateWithDuplicatedEmail() throws Exception {
+        User updated = UserTestData.getUpdated();
+        updated.setEmail(admin.getEmail());
+        MvcResult result = perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(userHttpBasic(admin))
+                .content(UserTestData.jsonWithPassword(updated, "newPass")))
+                .andExpect(status().isConflict())
+                .andReturn();
+
+        Assertions.assertTrue(result.getResponse().getContentAsString().contains(DUPLICATED_EMAIL_RESPONSE_TEXT));
     }
 }

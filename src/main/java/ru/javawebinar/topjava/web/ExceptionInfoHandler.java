@@ -27,6 +27,7 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static final String DUPLICATE_EMAIL_MESSAGE = "User with this email already exists.";
+    private static final String DUPLICATE_MEAL_MESSAGE = "You have already added meal at this time.";
 
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
 
@@ -40,7 +41,12 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        return getErrorInfo(req, e, true, DATA_ERROR, DUPLICATE_EMAIL_MESSAGE);
+        Throwable rootCause = ValidationUtil.getRootCause(e);
+        if (rootCause.getMessage().contains("meals_unique_user_datetime_idx")) {
+            return getErrorInfo(req, e, true, DATA_ERROR, DUPLICATE_MEAL_MESSAGE);
+        } else if (rootCause.getMessage().contains("users_unique_email_idx")) {
+            return getErrorInfo(req, e, true, DATA_ERROR, DUPLICATE_EMAIL_MESSAGE);
+        } else return getErrorInfo(req, e, true, DATA_ERROR);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
@@ -61,7 +67,7 @@ public class ExceptionInfoHandler {
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String message) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
-        if (message == null){
+        if (message == null) {
             message = rootCause.getMessage();
         }
         logErrorInfo(req, rootCause, logException, errorType);
