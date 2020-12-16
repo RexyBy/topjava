@@ -67,6 +67,8 @@ $(function () {
         },
     });
 
+    $.datetimepicker.setLocale(localeCode);
+
 //  http://xdsoft.net/jqplugins/datetimepicker/
     var startDate = $('#startDate');
     var endDate = $('#endDate');
@@ -113,6 +115,6 @@ $(function () {
     });
 
     $('#dateTime').datetimepicker({
-        format: 'Y-m-d H:i'
+        format: 'Y-m-d H:i',
     });
 });

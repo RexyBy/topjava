@@ -10,9 +10,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javawebinar.topjava.ErrorInfoUtil;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
@@ -137,7 +139,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(MealTestData.getInvalidJson())
                 .with(userHttpBasic(user)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource));
     }
 
     @Test
@@ -147,7 +150,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(MealTestData.getInvalidJson())
                 .with(userHttpBasic(user)))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + MEAL1_ID, ErrorType.VALIDATION_ERROR, messageSource));
     }
 
     @Test
@@ -155,14 +159,12 @@ class MealRestControllerTest extends AbstractControllerTest {
     void createWithDuplicatedDateTime() throws Exception {
         Meal newMeal = MealTestData.getNew();
         newMeal.setDateTime(meal1.getDateTime());
-        MvcResult result = perform(MockMvcRequestBuilders.post(REST_URL)
+        perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newMeal))
                 .with(userHttpBasic(user)))
-                .andExpect(status().isConflict())
-                .andReturn();
-
-        Assertions.assertTrue(result.getResponse().getContentAsString().contains(DUPLICATED_DATE_TIME_MESSAGE_TEXT));
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, "error.mealExists"));
     }
 
     @Test
@@ -170,12 +172,10 @@ class MealRestControllerTest extends AbstractControllerTest {
     void updateWithDuplicatedDateTime() throws Exception {
         Meal updated = MealTestData.getUpdated();
         updated.setDateTime(meal3.getDateTime());
-        MvcResult result = perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
+        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(user)))
-                .andExpect(status().isConflict())
-                .andReturn();
-
-        Assertions.assertTrue(result.getResponse().getContentAsString().contains(DUPLICATED_DATE_TIME_MESSAGE_TEXT));
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + MEAL1_ID, ErrorType.VALIDATION_ERROR, messageSource, "error.mealExists"));
     }
 }

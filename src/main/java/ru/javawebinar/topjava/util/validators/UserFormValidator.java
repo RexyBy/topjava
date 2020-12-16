@@ -2,37 +2,39 @@ package ru.javawebinar.topjava.util.validators;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
+import ru.javawebinar.topjava.HasEmail;
+import ru.javawebinar.topjava.HasId;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.service.UserService;
+import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.to.UserTo;
 
-import java.util.List;
-
 @Component
-public class UserFormValidator implements Validator {
+public class UserFormValidator extends AbstractFormValidator {
 
-    private UserService userService;
+    private UserRepository userRepository;
 
-    public UserFormValidator(UserService userService) {
-        this.userService = userService;
+    public UserFormValidator(UserRepository userRepository) {
+        this.userRepository = userRepository;
+        messageCode = "error.emailIsUsed";
     }
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return UserTo.class.equals(clazz);
+        for (Class interfaze : clazz.getInterfaces()){
+            if (interfaze.equals(HasEmail.class)){
+                return User.class.equals(clazz) || UserTo.class.equals(clazz);
+            }
+        }
+        return false;
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        UserTo userTo = (UserTo) target;
-        List<User> allUsers = userService.getAll();
-        for (User user : allUsers) {
-            if ((userTo.getId() == null || userTo.getId().equals(user.getId()) == false)
-                    && userTo.getEmail().toLowerCase().equals(user.getEmail().toLowerCase())) {
-                errors.rejectValue("email", "error.emailIsUsed");
-                break;
-            }
+        HasEmail targetWithEmail = (HasEmail) target;
+        HasId targetWithId = (HasId) target;
+        User userWithSuchEmail = userRepository.getByEmail(targetWithEmail.getEmail());
+        if (userWithSuchEmail != null && userWithSuchEmail.getId().equals(targetWithId.getId()) == false) {
+            rejectValue(errors, "email");
         }
     }
 }

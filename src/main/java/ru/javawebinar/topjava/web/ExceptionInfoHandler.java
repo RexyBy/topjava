@@ -7,7 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,15 +20,13 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
-    private static final String DUPLICATE_EMAIL_MESSAGE = "User with this email already exists.";
-    private static final String DUPLICATE_MEAL_MESSAGE = "You have already added meal at this time.";
-
     private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
 
     //  http://stackoverflow.com/a/22358422/548473
@@ -41,21 +39,22 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        Throwable rootCause = ValidationUtil.getRootCause(e);
-        if (rootCause.getMessage().contains("meals_unique_user_datetime_idx")) {
-            return getErrorInfo(req, e, true, DATA_ERROR, DUPLICATE_MEAL_MESSAGE);
-        } else if (rootCause.getMessage().contains("users_unique_email_idx")) {
-            return getErrorInfo(req, e, true, DATA_ERROR, DUPLICATE_EMAIL_MESSAGE);
-        } else return getErrorInfo(req, e, true, DATA_ERROR);
+        return getErrorInfo(req, e, true, DATA_ERROR);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler({IllegalRequestDataException.class,
             MethodArgumentTypeMismatchException.class,
-            HttpMessageNotReadableException.class,
-            MethodArgumentNotValidException.class})
+            HttpMessageNotReadableException.class})
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
         return getErrorInfo(req, e, false, VALIDATION_ERROR);
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
+    @ExceptionHandler(BindException.class)
+    public ErrorInfo bindingDataError(HttpServletRequest req, Exception e) {
+        BindException bindException = (BindException) e;
+        return getErrorInfo(req, e, false, VALIDATION_ERROR, ValidationUtil.getErrorResponseDetails(bindException.getBindingResult()));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -65,17 +64,21 @@ public class ExceptionInfoHandler {
     }
 
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
-    private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String message) {
+    private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, List<String> messages) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
-        if (message == null) {
-            message = rootCause.getMessage();
-        }
         logErrorInfo(req, rootCause, logException, errorType);
+        return new ErrorInfo(req.getRequestURL(), errorType, messages);
+    }
+
+    private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String message) {
+        if (message.isEmpty()) {
+            message = ValidationUtil.getRootCause(e).getMessage();
+        }
         return new ErrorInfo(req.getRequestURL(), errorType, message);
     }
 
     private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
-        return getErrorInfo(req, e, logException, errorType, null);
+        return getErrorInfo(req, e, logException, errorType, "");
     }
 
     private static void logErrorInfo(HttpServletRequest req, Throwable rootCause, boolean logException, ErrorType errorType) {

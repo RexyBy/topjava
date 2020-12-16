@@ -14,7 +14,7 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class UserTestData {
     public static final TestMatcher<User> USER_MATCHER = TestMatcher.usingIgnoringFieldsComparator(User.class, "registered", "meals", "password");
-    public static final String DUPLICATED_EMAIL_RESPONSE_TEXT = "\"detail\":\"User with this email already exists.\"}";
+    public static final String DUPLICATED_EMAIL_RESPONSE_TEXT = "\"details\":\"Пользователь с таким email уже существует\"}";
 
     public static TestMatcher<User> USER_WITH_MEALS_MATCHER =
             TestMatcher.usingAssertions(User.class,
@@ -41,6 +41,10 @@ public class UserTestData {
         return new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.USER));
     }
 
+    public static User getInvalid() {
+        return new User(null, "", "ne", "newPass", -1, false, new Date(), Collections.singleton(Role.USER));
+    }
+
     public static User getUpdated() {
         User updated = new User(user);
         updated.setEmail("update@gmail.com");
@@ -54,16 +58,5 @@ public class UserTestData {
 
     public static String jsonWithPassword(User user, String passw) {
         return JsonUtil.writeAdditionProps(user, "password", passw);
-    }
-
-    public static String getInvalidJson() {
-        return """             
-                {
-                     "name": "",
-                     "email": "use",
-                     "password": "",
-                     "roles": ["USER"]
-                }
-                """;
     }
 }

@@ -9,10 +9,12 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.javawebinar.topjava.ErrorInfoUtil;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserUtil;
+import ru.javawebinar.topjava.util.exception.ErrorType;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -95,44 +97,42 @@ class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     void registerInvalid() throws Exception {
         perform(MockMvcRequestBuilders.post(REST_URL + "/register").contentType(MediaType.APPLICATION_JSON)
-                .content(getInvalidJson()))
+                .content(JsonUtil.writeValue(getInvalid())))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + "/register", ErrorType.VALIDATION_ERROR, messageSource));
     }
 
     @Test
     void updateInvalid() throws Exception {
         perform(MockMvcRequestBuilders.put(REST_URL).contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
-                .content(getInvalidJson()))
+                .content(JsonUtil.writeValue(getInvalid())))
                 .andDo(print())
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource));
     }
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void registerWithDuplicatedEmail() throws Exception {
         UserTo newTo = new UserTo(null, "newName", "user@yandex.ru", "newPassword", 1500);
-        MvcResult result = perform(MockMvcRequestBuilders.post(REST_URL + "/register")
+        perform(MockMvcRequestBuilders.post(REST_URL + "/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newTo)))
-                .andExpect(status().isConflict())
-                .andReturn();
-
-        Assertions.assertTrue(result.getResponse().getContentAsString().contains(DUPLICATED_EMAIL_RESPONSE_TEXT));
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + "/register", ErrorType.VALIDATION_ERROR, messageSource, "error.emailIsUsed"));
     }
 
     @Test
     @Transactional(propagation = Propagation.NEVER)
     void updateWithDuplicatedEmail() throws Exception {
         UserTo updatedTo = new UserTo(null, "newName", "admin@gmail.com", "newPassword", 1500);
-        MvcResult result = perform(MockMvcRequestBuilders.put(REST_URL).contentType(MediaType.APPLICATION_JSON)
+        perform(MockMvcRequestBuilders.put(REST_URL).contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
-                .andExpect(status().isConflict())
-                .andReturn();
-
-        Assertions.assertTrue(result.getResponse().getContentAsString().contains(DUPLICATED_EMAIL_RESPONSE_TEXT));
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, "error.emailIsUsed"));
     }
 }
