@@ -26,12 +26,14 @@ public class MealFormValidator extends AbstractFormValidator {
     @Override
     public void validate(Object target, Errors errors) {
         Meal targetMeal = (Meal) target;
-        LocalDate targetMealDate = targetMeal.getDateTime() != null ? targetMeal.getDateTime().toLocalDate() : LocalDate.EPOCH;
-        List<Meal> mealsOnThisDate = mealService.getBetweenInclusive(targetMealDate, targetMealDate, SecurityUtil.authUserId());
-        for (Meal meal : mealsOnThisDate){
-            if (meal.getDateTime().equals(targetMeal.getDateTime())){
-                rejectValue(errors, "dateTime");
-            }
+        if (targetMeal.getDateTime() == null) {
+            return;
         }
+        LocalDate targetMealDate = targetMeal.getDateTime().toLocalDate();
+        List<Meal> mealsOnThisDate = mealService.getBetweenInclusive(targetMealDate, targetMealDate, SecurityUtil.authUserId());
+        mealsOnThisDate.stream()
+                .filter(meal -> meal.getDateTime().equals(targetMeal.getDateTime()))
+                .filter(meal -> !meal.getId().equals(targetMeal.getId()))
+                .forEach(meal -> rejectValue(errors, "dateTime"));
     }
 }

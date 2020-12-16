@@ -1,10 +1,8 @@
 package ru.javawebinar.topjava.web.user;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
@@ -100,7 +98,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getInvalid())))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + "/register", ErrorType.VALIDATION_ERROR, messageSource));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + "/register", ErrorType.VALIDATION_ERROR));
     }
 
     @Test
@@ -110,7 +108,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getInvalid())))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR));
     }
 
     @Test
@@ -121,7 +119,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newTo)))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + "/register", ErrorType.VALIDATION_ERROR, messageSource, "error.emailIsUsed"));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + "/register", ErrorType.VALIDATION_ERROR, messageSource, DUPLICATE_EMAIL_ERROR_CODE));
     }
 
     @Test
@@ -133,6 +131,6 @@ class ProfileRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, "error.emailIsUsed"));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, DUPLICATE_EMAIL_ERROR_CODE));
     }
 }

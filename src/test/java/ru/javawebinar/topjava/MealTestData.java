@@ -13,7 +13,8 @@ import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 public class MealTestData {
     public static final TestMatcher<Meal> MEAL_MATCHER = TestMatcher.usingIgnoringFieldsComparator(Meal.class, "user");
     public static TestMatcher<MealTo> MEAL_TO_MATCHER = TestMatcher.usingEqualsComparator(MealTo.class);
-    public static final String DUPLICATED_DATE_TIME_MESSAGE_TEXT = "\"details\":\"You have already added meal at this time.\"}";
+
+    public static final String DUPLICATE_DATE_TIME_ERROR_CODE = "error.mealExists";
 
     public static final int NOT_FOUND = 10;
     public static final int MEAL1_ID = START_SEQ + 2;

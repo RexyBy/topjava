@@ -20,7 +20,6 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -52,9 +51,8 @@ public class ExceptionInfoHandler {
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
     @ExceptionHandler(BindException.class)
-    public ErrorInfo bindingDataError(HttpServletRequest req, Exception e) {
-        BindException bindException = (BindException) e;
-        return getErrorInfo(req, e, false, VALIDATION_ERROR, ValidationUtil.getErrorResponseDetails(bindException.getBindingResult()));
+    public ErrorInfo bindingDataError(HttpServletRequest req, BindException e) {
+        return getErrorInfo(req, e, false, VALIDATION_ERROR, ValidationUtil.getErrorResponseDetails(e.getBindingResult()));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -64,21 +62,13 @@ public class ExceptionInfoHandler {
     }
 
     //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
-    private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, List<String> messages) {
+    private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String... messages) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
         logErrorInfo(req, rootCause, logException, errorType);
-        return new ErrorInfo(req.getRequestURL(), errorType, messages);
-    }
-
-    private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType, String message) {
-        if (message.isEmpty()) {
-            message = ValidationUtil.getRootCause(e).getMessage();
+        if (messages.length == 0) {
+            messages = new String[]{ValidationUtil.getRootCause(e).getMessage()};
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, message);
-    }
-
-    private static ErrorInfo getErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
-        return getErrorInfo(req, e, logException, errorType, "");
+        return new ErrorInfo(req.getRequestURL(), errorType, messages);
     }
 
     private static void logErrorInfo(HttpServletRequest req, Throwable rootCause, boolean logException, ErrorType errorType) {

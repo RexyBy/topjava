@@ -1,25 +1,17 @@
 package ru.javawebinar.topjava.util.exception;
 
 import java.beans.ConstructorProperties;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ErrorInfo {
     private final String url;
     private final ErrorType type;
-    private final List<String> details = new ArrayList<>();
+    private final String[] details;
 
     @ConstructorProperties({"url", "type", "details"})
-    public ErrorInfo(CharSequence url, ErrorType type, List<String> details) {
+    public ErrorInfo(CharSequence url, ErrorType type, String... details) {
         this.url = url.toString();
         this.type = type;
-        this.details.addAll(details);
-    }
-
-    public ErrorInfo(CharSequence url, ErrorType type, String detail) {
-        this.url = url.toString();
-        this.type = type;
-        this.details.add(detail);
+        this.details = details;
     }
 
     public String getUrl() {
@@ -30,7 +22,7 @@ public class ErrorInfo {
         return type;
     }
 
-    public List<String> getDetails() {
+    public String[] getDetails() {
         return details;
     }
 }

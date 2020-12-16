@@ -20,20 +20,15 @@ public class UserFormValidator extends AbstractFormValidator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        for (Class interfaze : clazz.getInterfaces()){
-            if (interfaze.equals(HasEmail.class)){
-                return User.class.equals(clazz) || UserTo.class.equals(clazz);
-            }
-        }
-        return false;
+        return User.class.equals(clazz) || UserTo.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
         HasEmail targetWithEmail = (HasEmail) target;
         HasId targetWithId = (HasId) target;
-        User userWithSuchEmail = userRepository.getByEmail(targetWithEmail.getEmail());
-        if (userWithSuchEmail != null && userWithSuchEmail.getId().equals(targetWithId.getId()) == false) {
+        User userWithSuchEmail = userRepository.getByEmail(targetWithEmail.getEmail().toLowerCase());
+        if (userWithSuchEmail != null && !userWithSuchEmail.getId().equals(targetWithId.getId())) {
             rejectValue(errors, "email");
         }
     }

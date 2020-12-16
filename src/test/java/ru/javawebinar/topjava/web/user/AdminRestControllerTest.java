@@ -159,7 +159,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getInvalid())))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR));
     }
 
     @Test
@@ -170,7 +170,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(getInvalid())))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + USER_ID, ErrorType.VALIDATION_ERROR, messageSource));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + USER_ID, ErrorType.VALIDATION_ERROR));
     }
 
     @Test
@@ -183,7 +183,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .content(UserTestData.jsonWithPassword(newUser, "newPass")))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, "error.emailIsUsed"));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, DUPLICATE_EMAIL_ERROR_CODE));
     }
 
     @Test
@@ -196,6 +196,6 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(admin))
                 .content(UserTestData.jsonWithPassword(updated, "newPass")))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + USER_ID, ErrorType.VALIDATION_ERROR, messageSource, "error.emailIsUsed"));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + USER_ID, ErrorType.VALIDATION_ERROR, messageSource, DUPLICATE_EMAIL_ERROR_CODE));
     }
 }

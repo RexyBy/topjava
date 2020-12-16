@@ -1,11 +1,9 @@
 package ru.javawebinar.topjava.web.meal;
 
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Propagation;
@@ -140,7 +138,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR));
     }
 
     @Test
@@ -151,7 +149,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .with(userHttpBasic(user)))
                 .andDo(print())
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + MEAL1_ID, ErrorType.VALIDATION_ERROR, messageSource));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + MEAL1_ID, ErrorType.VALIDATION_ERROR));
     }
 
     @Test
@@ -164,7 +162,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(newMeal))
                 .with(userHttpBasic(user)))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, "error.mealExists"));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL, ErrorType.VALIDATION_ERROR, messageSource, DUPLICATE_DATE_TIME_ERROR_CODE));
     }
 
     @Test
@@ -176,6 +174,6 @@ class MealRestControllerTest extends AbstractControllerTest {
                 .content(JsonUtil.writeValue(updated))
                 .with(userHttpBasic(user)))
                 .andExpect(status().isUnprocessableEntity())
-                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + MEAL1_ID, ErrorType.VALIDATION_ERROR, messageSource, "error.mealExists"));
+                .andExpect(ErrorInfoUtil.errorInfo(REST_URL + MEAL1_ID, ErrorType.VALIDATION_ERROR, messageSource, DUPLICATE_DATE_TIME_ERROR_CODE));
     }
 }
